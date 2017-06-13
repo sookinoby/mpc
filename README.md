@@ -4,36 +4,39 @@ Self-Driving Car Engineer Nanodegree Program
 ---
 
 ## Variables
-
+```python
 The state variable are
  x,y position of car
  psi - The angle of orientation of car
  v - velocity of car
  cte - Cross track error
  epsi - Orinetation error
-
+```
 ## acutations   
 The acutation inputs are steering angle and throttle
 
 ## Update equation - Kinematic model
-
+```python
  x1 = (x0 + v0 * CppAD::cos(psi0) * dt);
  y1 =  (y0 + v0 * CppAD::sin(psi0) * dt);
  psi2 = (psi0 + v0 * delta0 / Lf * dt);
  v2 = v1 - (v0 + a0 * dt);
  cte2 =((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
  epsi = ((psi0 - psides0) + v0 * delta0 / Lf * dt);
+
                      
 where x1,y1 position of car after time step dt
 psi2 is the orientation of car after time step dt
 v2 is the velocity of the car after time step dt
 cte2 is the cross track error of the car after time step dt
 epsi is the error is orientaton after time step dt
+```
 
 ## Choosing of N and dt
 I choose N to be 15. I dont want to predict far ahead is future (computational expensive).
-Choosing N to small will cause acutation actions to be erractic
-I choose dt as 0.1, since applying correction every 0.1 is good idea and keeps car in the track
+Choosing N to small will cause acutation actions to be erractic.
+
+I choose dt as 0.1, since applying correction every 0.1 is good idea and keeps car in the track.
 
 ##polynomial fitting and MPC preprocessing
 I converted the waypoints into the car reference frame using
