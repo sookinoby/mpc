@@ -100,6 +100,7 @@ int main() {
                     double psi = j[1]["psi"];
                     double v = j[1]["speed"];
                     double steer_angle = j[1]["steering_angle"];
+                    double throttle =  j[1]["throttle"];
 
                     vector<double> ptsx_car(ptsx.size());
                     vector<double> ptsy_car(ptsy.size());
@@ -108,8 +109,7 @@ int main() {
                     {
                         double x = ptsx[i] - px;
                         double y = ptsy[i] -py;
-                        //Not sure why I am using (-psi). This makes sense only when both the vehicle/
-                        // map coordinate have almost same orientation of axis.
+
                         ptsx_car[i] = x * cos(-psi) - y * sin(-psi);
                         ptsy_car[i] = x * sin(-psi) + y * cos(-psi);
 
@@ -125,11 +125,36 @@ int main() {
 
 
                     // Not sure why I am using -steer_angle. But works
-                    double predicted_x = 0 + v * 0.44704 * cos(-steer_angle) * 0.1;
-                    double predicted_y = 0 + v * 0.44704 * sin(-steer_angle) * 0.1;
+                    double x0 = 0;
+                    double y0 = 0;
+                    double dt = 0.1;
+                    double v0 = v*0.44704;
+                    double a0 = throttle;
 
-                    state << predicted_x, predicted_y, 0, v*0.44704, cte, epsi;
+                    double psi0 = 0;
+                    double delta1 = steer_angle;
+                    double epsi0 =epsi;
 
+
+                    double v1 =  (v0 + a0 * dt);
+                    double psi1 = (psi0 + v0 * delta1 / Lf * dt);
+
+                    double x1 = (x0 + v0 * cos(psi0) * dt);
+                    double y1 = (y0 + v0 * sin(psi0) * dt);
+
+                    double f1 = coeffs[0] + coeffs[1] * x1 + coeffs[2]*x1 * x1 + coeffs[3] * x1 * x1 * x1;
+
+                    double psides1 = atan(coeffs[1] + (2*coeffs[2] * x1) + (3*coeffs[3] * x1 *x1));
+
+                    double cte1 = ((f1 - x1) + (v1 * sin(psi1) * dt));
+                    double epsi1 = ((psi1 - psides1) + v1 * delta1 / Lf * dt);
+
+
+
+                  //  double predicted_x = 0 + v * 0.44704 * cos(-steer_angle) * 0.1;
+                   // double predicted_y = 0 + v * 0.44704 * sin(-steer_angle) * 0.1;
+
+                    state << x1, y1, psi1, v1, cte1, epsi1;
 
 
 //          for(int i=0; i < ptsx.size();i++)
@@ -254,3 +279,4 @@ int main() {
     }
     h.run();
 }
+
